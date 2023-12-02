@@ -26,12 +26,10 @@ app.get('/instance/:name', (req, res) => {
         username: process.env.USER1,
         password: process.env.PK1
       }).then(function(){
-        ssh.exec('elma365ctl',['repair'],{stdin: 'y'}).then(function(result) {
-          stdoutLog = result.stdout + '\n\n' + result.stderr;
-        }).then(function(){
+        ssh.exec('elma365ctl',['repair'],{stdin: 'y', stream: 'both'}).then(function(result) {
           res.render('instance',{
             id: req.params.name,
-            log: stdoutLog
+            log: result.stdout
           });
         })
       });
