@@ -4,7 +4,7 @@ const { engine } = require('express-handlebars');
 const fs = require('fs');
 const path = require('path');
 const {NodeSSH} = require('node-ssh');
-const { stdout } = require('process');
+const YAML = require('yaml')
 
 const app = express();
 app.engine('handlebars', engine());
@@ -13,33 +13,34 @@ app.set('views', './views');
 
 const ssh = new NodeSSH();
 
+
+
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
 app.get('/', (req, res) => {
-  res.render('index');
+  const file = fs.readFileSync(process.env.PATH_INSTANCE_FILE, 'utf8');
+  const data = YAML.parse(file);
+  
+  console.log(data);
+
+  res.render('index', {
+    instances: data
+  });
 })
 
 app.get('/instance/:name', (req, res) => {
-  let stdoutLog;
-  switch (req.params.name) {
-    case '4': {
-      ssh.connect({
-        host: process.env.HOST1,
-        username: process.env.USER1,
-        password: process.env.PK1
-      }).then(function(){
-        ssh.exec('elma365ctl',['repair'],{stdin: 'y', stream: 'both'}).then(function(result) {
-          res.render('instance',{
-            id: req.params.name,
-            log: result.stdout
-          });
-        })
+  ssh.connect({
+    host: data[req.params.name].host,
+    username: data[req.params.name].user,
+    password: data[req.params.name].pass
+  }).then(function () {
+    ssh.exec('elma365ctl', ['repair'], { stdin: 'y', stream: 'both' }).then(function (result) {
+      res.render('instance', {
+        id: data[req.params.name].name,
+        log: result.stdout
       });
-      break;
-    }
-    default: {
-      res.render('error');
-      break;
-    }
-  } 
+    })
+  });
 })
 
 app.listen(process.env.PORT, () => {

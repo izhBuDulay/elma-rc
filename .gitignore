@@ -1,3 +1,6 @@
+# YAML configs
+*.yml
+
 # Logs
 logs
 *.log
