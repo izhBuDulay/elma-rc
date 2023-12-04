@@ -13,15 +13,15 @@ app.set('views', './views');
 
 const ssh = new NodeSSH();
 
-
+let data;
 
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 app.get('/', (req, res) => {
   const file = fs.readFileSync(process.env.PATH_INSTANCE_FILE, 'utf8');
-  const data = YAML.parse(file);
+  data = YAML.parse(file);
   
-  console.log(data);
+  //console.log(data);
 
   res.render('index', {
     instances: data
@@ -29,6 +29,8 @@ app.get('/', (req, res) => {
 })
 
 app.get('/instance/:name', (req, res) => {
+  let dataaa = JSON.stringify(data)
+  console.log(dataaa['0'])
   ssh.connect({
     host: data[req.params.name].host,
     username: data[req.params.name].user,
@@ -42,6 +44,13 @@ app.get('/instance/:name', (req, res) => {
     })
   });
 })
+
+// app.use((err, req, res, next) => {
+//   res.status(404).render('error', {
+//     errorcode: res.statusCode
+//   });
+//   next();
+// })
 
 app.listen(process.env.PORT, () => {
   console.log(`Example app listening on port ${process.env.PORT}`);

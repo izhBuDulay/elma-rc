@@ -11,11 +11,21 @@
 
 .instances {
     margin: auto;
-    padding: 30px;
+    width: 380px;
+    /*padding: 30px; */
     border-radius: 1.25rem;
     background-color: #ffffff;
 }
 
+h2 {
+    background-color: #20B2AA;
+    border-top-right-radius: 1.25rem;
+    border-top-left-radius: 1.25rem;
+    height: 2rem;
+    padding: 15px;
+    margin-top: -10px;
+}
+
 p {
-    
+    margin: 0px 10px 10px 10px;
 }
